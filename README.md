@@ -4,9 +4,7 @@
 
 O sistema de escalonamento cíclico é projetado para gerenciar a execução de tarefas em sistemas embarcados ou de tempo real, onde a previsibilidade e a eficiência são extremamentes importantes. O objetivo é garantir que todas as tarefas sejam executadas dentro de seus períodos especificados, utilizando o mínimo múltiplo comum (MMC) para definir o ciclo maior (tempo de ciclo primário) e o máximo divisor comum (MDC) para determinar o ciclo menor (tempo de ciclo secundário), otimizando assim a execução das tarefas.
 
-## Componentes Principais
-
-### Estrutura usada para as Tarefas
+## Estrutura usada para as Tarefas
 
 Cada tarefa é representada por uma estrutura contendo:
 
