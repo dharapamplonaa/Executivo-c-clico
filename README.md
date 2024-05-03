@@ -1,39 +1,53 @@
 # Executivo Cíclico
 
-## Visão Geral
+## Link para o Vídeo
 
-O sistema de escalonamento cíclico é projetado para gerenciar a execução de tarefas em sistemas embarcados ou de tempo real, onde a previsibilidade e a eficiência são extremamentes importantes. O objetivo é garantir que todas as tarefas sejam executadas dentro de seus períodos especificados, utilizando o mínimo múltiplo comum (MMC) para definir o ciclo maior (tempo de ciclo primário) e o máximo divisor comum (MDC) para determinar o ciclo menor (tempo de ciclo secundário), otimizando assim a execução das tarefas.
+O projeto foi explicado em um video no link: [Video no Youtube](https://youtu.be/D41Fi84FVlA)
 
-## Estrutura usada para as Tarefas
+## Objetivo do Projeto
 
-Cada tarefa é representada por uma estrutura contendo:
+Este projeto desenvolve um sistema de executivo cíclico que lê configurações de tarefas de um arquivo JSON e as organiza com base em uma heurística de escalonamento. O principal objetivo é calcular os tempos de ciclo primário e secundário para um conjunto de tarefas e sugerir um escalonamento que otimize a execução das tarefas dentro desses ciclos, maximizando a eficiência e a utilização da CPU.
 
-- **ID:** Identificador único da tarefa.
-- **Período:** Intervalo de tempo entre inícios consecutivos da tarefa.
-- **Tempo de Execução:** Duração que a tarefa leva para ser concluída.
-- **Prioridade:** Importância relativa da tarefa, usada para resolver conflitos de escalonamento.
+## Como Funciona
 
-## Lógica do Programa
+### Entrada de Dados
+As tarefas são definidas em um arquivo JSON, onde cada tarefa contém as seguintes propriedades:
+- **ID**: Identificador único da tarefa.
+- **Período**: Frequência com que a tarefa deve ser executada.
+- **Tempo de Execução**: Tempo necessário para completar a tarefa.
+- **Prioridade**: Prioridade da tarefa, que pode influenciar a ordem de execução em algumas heurísticas.
 
-### Inicialização e Leitura de Dados
+### Processamento
+O programa realiza os seguintes passos:
+1. **Leitura do Arquivo JSON**: As tarefas são extraídas do arquivo JSON.
+2. **Cálculo dos Tempos de Ciclo**:
+   - **Tempo de Ciclo Primário**: Calculado como o mínimo múltiplo comum (MMC) dos períodos das tarefas.
+   - **Tempo de Ciclo Secundário**: Determinado como o máximo divisor comum (MDC) dos períodos.
+3. **Escalonamento das Tarefas**:
+   - As tarefas são ordenadas usando `qsort` baseado na heurística escolhida (Menor Tempo de Execução Primeiro, por padrão).
+   - As tarefas são escalonadas para execução nos ciclos calculados.
 
-O programa começa lendo o conjunto de tarefas de um arquivo JSON, populando a estrutura de dados de tarefas com IDs, períodos, tempos de execução e prioridades.
+### Heurísticas de Escalonamento
+- **Menor Tempo de Execução Primeiro**: Prioriza tarefas que requerem menos tempo para serem concluídas, buscando reduzir o tempo médio de espera.
+- **Maior Tempo de Execução Primeiro**: Incluído como uma alternativa para comparação, prioriza tarefas que levam mais tempo, potencialmente útil para certos tipos de cargas de trabalho.
 
-### Cálculo de Ciclos
+## Análise dos Resultados
 
-Após a leitura dos dados, o programa calcula o ciclo maior usando MMC de todos os períodos das tarefas. O ciclo menor é inicialmente o MDC dos períodos, mas é ajustado para atender a requisitos específicos que garantem que todas as tarefas possam ser escalonadas adequadamente.
+Após a execução, o programa imprime:
+- **Tempos de Ciclo**: Os valores calculados para os tempos de ciclo primário e secundário.
+- **Escalonamento Detalhado por Ciclo**: Mostra como as tarefas são alocadas em cada ciclo de acordo com a heurística aplicada.
+- **Resumo Estatístico**:
+  - **Total de Ciclos**: Quantidade de ciclos completos necessários para executar todas as tarefas dentro de um ciclo primário.
+  - **Total de Intercâmbios de Tarefa por Ciclo**: Conta quantas vezes as tarefas são trocadas dentro dos ciclos, o que pode indicar a complexidade do escalonamento.
+  - **Utilização da CPU**: Calculada como a porcentagem do tempo total de execução das tarefas em relação ao tempo total disponível no ciclo primário. Uma maior utilização indica um escalonamento mais eficiente.
 
-### Teste e Seleção do Ciclo Menor
+### Considerações sobre a Utilização da CPU
 
-O programa testa diferentes valores para o ciclo menor para encontrar um que maximize a eficiência e atenda aos critérios de escalonamento sem violar os períodos das tarefas. Isso é feito verificando se o ciclo menor proposto pode ser repetido dentro do ciclo maior sem conflitos e atendendo a todas as tarefas com seus respectivos períodos e tempos de execução.
+Uma utilização da CPU significativamente abaixo de 100% pode indicar que:
+- Há períodos de inatividade consideráveis devido à natureza das tarefas e seus períodos.
+- A heurística de escalonamento pode não ser ideal para o conjunto específico de tarefas.
 
-### Escalonamento de Tarefas
-
-As tarefas são então escalonadas de acordo com a heurística selecionada, e o sistema executa simulações para mostrar como as tarefas seriam escalonadas ao longo do tempo em ciclos menores dentro do ciclo maior.
-
-### Comparação de Heurísticas
-
-O sistema compara os resultados de diferentes heurísticas de escalonamento, mostrando como cada uma afeta a utilização da CPU, o número de intercâmbios de tarefas e a eficiência geral do escalonamento.
+Alterar as tarefas, ajustar seus períodos e tempos de execução, ou escolher uma heurística diferente podem ser estratégias para melhorar essa métrica.
 
 ## Conclusão
 
