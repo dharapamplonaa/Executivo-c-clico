@@ -4,6 +4,10 @@
 
 O projeto foi explicado em um video no link: [Video no Youtube](https://youtu.be/D41Fi84FVlA)
 
+## Execução
+
+Para executar o código, é preciso fazer o `make` no terminal. Apos isso, ele irá gerar um executável que será rodado com o comando `./exec_ciclico`
+
 ## Objetivo do Projeto
 
 Este projeto desenvolve um sistema de executivo cíclico que lê configurações de tarefas de um arquivo JSON e as organiza com base em uma heurística de escalonamento. O principal objetivo é calcular os tempos de ciclo primário e secundário para um conjunto de tarefas e sugerir um escalonamento que otimize a execução das tarefas dentro desses ciclos, maximizando a eficiência e a utilização da CPU.
