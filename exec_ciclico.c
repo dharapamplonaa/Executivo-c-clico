@@ -36,7 +36,7 @@ int comparador(const void *v1, const void *v2) {
 
 int main() {
     // Tentativa de abrir o arquivo JSON contendo as tarefas.
-    FILE *fp = fopen("tarefas2.json", "r");
+    FILE *fp = fopen("tarefas5.json", "r");
     if (!fp) {
         fprintf(stderr, "Erro ao abrir o arquivo.\n");
         return 1;  // Retorna 1 para indicar erro.
@@ -54,7 +54,7 @@ int main() {
     // Aloca memória para as tarefas com base no número de tarefas encontradas.
     Tarefa *lista_tarefas = malloc(n_tarefas * sizeof(Tarefa));
     int tempo_ciclo_primario = 1;
-    int tempo_ciclo_secundario = 0;
+    // int tempo_ciclo_secundario = INT_MAX;
 
     // Loop que processa cada tarefa JSON, extrai seus dados e calcula tempos de ciclo.
     for (size_t i = 0; i < n_tarefas; i++) {
@@ -66,9 +66,40 @@ int main() {
         lista_tarefas[i].prioridade = json_object_get_int(json_object_object_get(tarefa, "prioridade"));
 
         tempo_ciclo_primario = mmc(tempo_ciclo_primario, lista_tarefas[i].periodo);
-        tempo_ciclo_secundario = (i == 0) ? lista_tarefas[i].periodo : mdc(tempo_ciclo_secundario, lista_tarefas[i].periodo);
+        // tempo_ciclo_secundario = (i == 0) ? lista_tarefas[i].periodo : mdc(tempo_ciclo_secundario, lista_tarefas[i].periodo);
     }
 
+    printf("Testando possíveis valores de ciclo menor:\n");
+    int x = 1, f[n_tarefas], f_count = 0;
+
+    while (x <= tempo_ciclo_primario) {
+        int valid = 1;
+        for (int i = 0; i < n_tarefas && valid; i++) {
+            if (x > lista_tarefas[i].tempo_execucao && (2*x - mdc(lista_tarefas[i].periodo, x) <= lista_tarefas[i].periodo)) {
+                if (tempo_ciclo_primario % x == 0) {
+                    valid = 1;
+                } else {
+                    valid = 0;
+                }
+            } else {
+                valid = 0;
+            }
+        }
+        if (valid) {
+            f[f_count++] = x;
+            printf("%d ", x);
+        }
+        x++;
+    }
+
+    if (f_count == 0) {
+        printf("Não escalonável\n");
+        exit(0);
+    }
+
+    // size_t size = sizeof(x);
+    int tempo_ciclo_secundario = f[f_count-1];  // Escolhendo o primeiro ciclo válido como o menor correto
+    
     // Ordena as tarefas usando o comparador definido anteriormente.
     qsort(lista_tarefas, n_tarefas, sizeof(Tarefa), comparador);
 
@@ -81,6 +112,7 @@ int main() {
     printf("\nEscalonamento Sugerido (Heurística: Menor Tempo de Execução Primeiro):\n");
     printf("----------------------------------------------------------------------\n");
 
+    // Calcula o número de ciclos
     int num_ciclos = tempo_ciclo_primario / tempo_ciclo_secundario;
     int intercambios = 0;
     double utilizacao_cpu = 0.0;
